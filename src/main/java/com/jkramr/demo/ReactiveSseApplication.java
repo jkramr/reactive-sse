@@ -31,8 +31,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @IntegrationComponentScan
 public class ReactiveSseApplication {
 
-  public static final long   TWEET_POLL_PERIOD  = 1000L;
-  public static final String TWEET_SEARCH_QUERY = "#trump";
+  public static final long   TWEET_POLL_PERIOD  = 10 * 1000L;
+  public static final int TWEET_PAGE_SIZE = 30;
+
+  public static final String TWEET_SEARCH_QUERY = "#scala";
 
   public static void main(String[] args) {
     SpringApplication.run(ReactiveSseApplication.class, args);
@@ -66,6 +68,7 @@ public class ReactiveSseApplication {
             twitter, "foo");
 
     source.setQuery(query);
+    source.setPageSize(TWEET_PAGE_SIZE);
 
     return source;
   }
