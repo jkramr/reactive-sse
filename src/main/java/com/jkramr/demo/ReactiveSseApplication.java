@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @IntegrationComponentScan
 public class ReactiveSseApplication {
 
-  public static final long   TWEET_POLL_PERIOD  = 10 * 1000L;
+  public static final long   TWEET_POLL_PERIOD  = 1000L;
   public static final String TWEET_SEARCH_QUERY = "#trump";
 
   public static void main(String[] args) {
