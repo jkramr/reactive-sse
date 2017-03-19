@@ -13,6 +13,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.channel.MessageChannels;
+import org.springframework.integration.transformer.GenericTransformer;
 import org.springframework.integration.twitter.inbound.SearchReceivingMessageSource;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.social.twitter.api.Tweet;
@@ -34,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SpringBootApplication
 @PropertySource("classpath:oauth.properties")
 @RestController
-@IntegrationComponentScan
 public class ReactiveSseApplication {
 
   public static final long TWEET_POLL_PERIOD = 10 * 1000L;
@@ -78,6 +78,8 @@ public class ReactiveSseApplication {
               message -> serialize.next(message.getPayload().toString());
 
       messageChannel().subscribe(handler);
+
+      emitter.onDispose(() -> messageChannel().unsubscribe(handler));
     });
   }
 
@@ -104,17 +106,21 @@ public class ReactiveSseApplication {
             twitterMessageSource(twitter),
             poller -> poller.poller(Pollers.fixedRate(TWEET_POLL_PERIOD))
     )
-                           .transform((Tweet tweet) -> {
-                             System.out.println("transform: " +
-                                                counter.incrementAndGet() +
-                                                ": " +
-                                                tweet.getText());
-
-                             return tweet.getText();
-                           })
-//                           .channel(messageChannel())
-                           .handle(handleEmmitter())
+                           .transform(transformTweet(counter))
+                           .channel(messageChannel())
+//                           .handle(handleEmmitter())
                            .get();
+  }
+
+  private GenericTransformer<Tweet, String> transformTweet(AtomicInteger counter) {
+    return (Tweet tweet) -> {
+      System.out.println("transform: " +
+                         counter.incrementAndGet() +
+                         ": " +
+                         tweet.getText());
+
+      return tweet.getText();
+    };
   }
 
   private MessageHandler handleEmmitter() {
