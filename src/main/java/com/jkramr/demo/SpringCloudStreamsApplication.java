@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
@@ -17,6 +18,7 @@ import org.springframework.integration.twitter.inbound.SearchReceivingMessageSou
 import org.springframework.integration.twitter.inbound.TimelineReceivingMessageSource;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
@@ -37,6 +39,16 @@ public class SpringCloudStreamsApplication {
   }
 
   @Bean
+  SearchReceivingMessageSource searchTwitterMessageSource() {
+    return new SearchReceivingMessageSource(twitter(), "foo");
+  }
+
+  @Bean
+  TimelineReceivingMessageSource timelineTwitterMessageSource() {
+    return new TimelineReceivingMessageSource(twitter(), "foo");
+  }
+
+  @Bean
   Twitter twitter() {
     return new TwitterTemplate(
             consumerKey,
@@ -47,24 +59,7 @@ public class SpringCloudStreamsApplication {
   }
 
   @EnableBinding(Source.class)
-  public static class TweetSource {
-
-    private final Twitter twitter;
-
-    @Autowired
-    public TweetSource(Twitter twitter) {
-      this.twitter = twitter;
-    }
-
-    @Bean
-    SearchReceivingMessageSource searchTwitterMessageSource() {
-      return new SearchReceivingMessageSource(twitter, "foo");
-    }
-
-    @Bean
-    TimelineReceivingMessageSource timelineTwitterMessageSource() {
-      return new TimelineReceivingMessageSource(twitter, "foo");
-    }
+  public class TweetSource {
 
     @Bean
     @InboundChannelAdapter(value = Source.OUTPUT,
@@ -81,7 +76,7 @@ public class SpringCloudStreamsApplication {
                                             maxMessagesPerPoll = "1"))
     public MessageSource<Tweet> inboundSearchMessageSource(
     ) {
-      return searchMessageSource("trump_search", "trump", 20);
+      return searchMessageSource("trump", 20);
     }
 
     private Message<Tweet> getTweetMessage(
@@ -102,14 +97,9 @@ public class SpringCloudStreamsApplication {
               )
               .build();
 
-      Tweet tweet = tweetMessage.getPayload();
-
       System.out.println("----" +
                          source +
-                         ": @" +
-                         tweet.getFromUser() +
-                         ": " +
-                         tweet.getText());
+                         ": sent");
 
       return tweetMessage;
     }
@@ -127,7 +117,6 @@ public class SpringCloudStreamsApplication {
     }
 
     private MessageSource<Tweet> searchMessageSource(
-            String source,
             String query,
             int pageSize
     ) {
@@ -136,7 +125,7 @@ public class SpringCloudStreamsApplication {
       messageSource.setQuery(query);
       messageSource.setPageSize(pageSize);
 
-      return () -> getTweetMessage(source, searchTwitterMessageSource());
+      return () -> getTweetMessage("search:" + query, searchTwitterMessageSource());
     }
 
     private MessageSource<Tweet> timeLineMessageSource(int pageSize) {
@@ -157,14 +146,7 @@ public class SpringCloudStreamsApplication {
 
     @StreamListener(Sink.INPUT)
     public void receive(Tweet tweet) {
-      System.out.println("******************");
-      System.out.println("At the Sink");
-      System.out.println("******************");
-      System.out.println("Received message " +
-                         tweet.getText() +
-                         " of type " +
-                         tweet.getClass());
+      System.out.println("---- @" + tweet.getFromUser() + ": " + tweet.getText());
     }
-
   }
 }
