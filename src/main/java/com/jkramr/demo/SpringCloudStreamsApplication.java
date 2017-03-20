@@ -1,16 +1,18 @@
 package com.jkramr.demo;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.core.MessageSource;
@@ -18,16 +20,16 @@ import org.springframework.integration.twitter.inbound.SearchReceivingMessageSou
 import org.springframework.integration.twitter.inbound.TimelineReceivingMessageSource;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
-
 @SpringBootApplication
 @PropertySource("classpath:oauth.properties")
 public class SpringCloudStreamsApplication {
+
+  @Value("${debug:false}") boolean debug;
 
   @Value("${twitter.oauth.consumerKey}")       String consumerKey;
   @Value("${twitter.oauth.consumerSecret}")    String consumerSecret;
@@ -38,14 +40,22 @@ public class SpringCloudStreamsApplication {
     SpringApplication.run(SpringCloudStreamsApplication.class, args);
   }
 
-  @Bean
-  SearchReceivingMessageSource searchTwitterMessageSource() {
-    return new SearchReceivingMessageSource(twitter(), "foo");
+  private static String tweetToString(Tweet tweet) {
+    return "---- @" +
+           tweet.getFromUser() +
+           ": " +
+           tweet.getText();
   }
 
   @Bean
-  TimelineReceivingMessageSource timelineTwitterMessageSource() {
-    return new TimelineReceivingMessageSource(twitter(), "foo");
+  @Scope("prototype")
+  Logger logger(InjectionPoint ip) {
+    return Logger.getLogger(ip.getDeclaredType().getName());
+  }
+
+  @Bean
+  SearchReceivingMessageSource searchTwitterMessageSource() {
+    return new SearchReceivingMessageSource(twitter(), "twitter");
   }
 
   @Bean
@@ -58,16 +68,23 @@ public class SpringCloudStreamsApplication {
     );
   }
 
+  @EnableBinding(Sink.class)
+  public static class TweetSink {
+
+    @StreamListener(Sink.INPUT)
+    public void receive(Tweet tweet) {
+      System.out.println(tweetToString(tweet));
+    }
+  }
+
   @EnableBinding(Source.class)
   public class TweetSource {
 
-    @Bean
-    @InboundChannelAdapter(value = Source.OUTPUT,
-                           poller = @Poller(fixedDelay = "10000",
-                                            maxMessagesPerPoll = "1"))
-    public MessageSource<Tweet> inboundTimelineMessageSource(
-    ) {
-      return timeLineMessageSource(20);
+    final Logger logger;
+
+    @Autowired
+    public TweetSource(Logger logger) {
+      this.logger = logger;
     }
 
     @Bean
@@ -97,9 +114,9 @@ public class SpringCloudStreamsApplication {
               )
               .build();
 
-      System.out.println("----" +
-                         source +
-                         ": sent");
+      Tweet tweet = tweetMessage.getPayload();
+
+      logger.debug("----" + source + ": sent message: " + tweetToString(tweet));
 
       return tweetMessage;
     }
@@ -125,28 +142,11 @@ public class SpringCloudStreamsApplication {
       messageSource.setQuery(query);
       messageSource.setPageSize(pageSize);
 
-      return () -> getTweetMessage("search:" + query, searchTwitterMessageSource());
+      return () -> getTweetMessage(
+              "search:" + query,
+              searchTwitterMessageSource()
+      );
     }
 
-    private MessageSource<Tweet> timeLineMessageSource(int pageSize) {
-      return () -> {
-        TimelineReceivingMessageSource messageSource =
-                timelineTwitterMessageSource();
-
-        messageSource.setPageSize(pageSize);
-
-        return getTweetMessage("timeline", messageSource);
-      };
-    }
-
-  }
-
-  @EnableBinding(Sink.class)
-  public static class TweetSink {
-
-    @StreamListener(Sink.INPUT)
-    public void receive(Tweet tweet) {
-      System.out.println("---- @" + tweet.getFromUser() + ": " + tweet.getText());
-    }
   }
 }
