@@ -63,7 +63,7 @@ public class TweetSource {
             .withPayload((Tweet) receive.getPayload())
             .setHeader(
                     MessageHeaders.CONTENT_TYPE,
-                    "application/x-java-object;type=org.springframework.social.twitter.api.Tweet"
+                    "application/x-java-object;type=" + Tweet.class.getTypeName()
             )
             .build();
 
