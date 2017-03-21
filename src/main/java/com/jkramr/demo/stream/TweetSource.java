@@ -1,6 +1,6 @@
-package com.jkramr.demo;
+package com.jkramr.demo.stream;
 
-import com.jkramr.demo.SpringCloudStreamsApplication.Writer;
+import com.jkramr.demo.util.Formatter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -14,26 +14,22 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.Twitter;
 
 @EnableBinding(Source.class)
 public class TweetSource {
 
   private final Logger                       logger;
-  private final Twitter                      twitter;
   private final SearchReceivingMessageSource searchTwitterMessageSource;
-  private       Writer<Tweet>                tweetWriter;
+  private final Formatter<Tweet>             tweetFormatter;
 
   @Autowired
   public TweetSource(
           Logger logger,
-          Twitter twitter,
-          Writer<Tweet> tweetWriter,
+          Formatter<Tweet> tweetFormatter,
           SearchReceivingMessageSource searchTwitterMessageSource
   ) {
     this.logger = logger;
-    this.twitter = twitter;
-    this.tweetWriter = tweetWriter;
+    this.tweetFormatter = tweetFormatter;
     this.searchTwitterMessageSource = searchTwitterMessageSource;
   }
 
@@ -41,9 +37,16 @@ public class TweetSource {
   @InboundChannelAdapter(value = Source.OUTPUT,
                          poller = @Poller(fixedDelay = "10000",
                                           maxMessagesPerPoll = "1"))
-  public MessageSource<Tweet> inboundSearchMessageSource(
-  ) {
-    return twitterSearchMessageSource("trump", 20);
+  public MessageSource<Tweet> inboundSearchMessageSource() {
+    SearchReceivingMessageSource messageSource = searchTwitterMessageSource;
+
+    messageSource.setQuery("#scala");
+    messageSource.setPageSize(20);
+
+    return () -> getTweetMessage(
+            "scala news: ",
+            searchTwitterMessageSource
+    );
   }
 
   private Message<Tweet> getTweetMessage(
@@ -69,7 +72,7 @@ public class TweetSource {
     logger.debug("----" +
                  source +
                  ": sent message: " +
-                 tweetWriter.write(tweet));
+                 tweetFormatter.format(tweet));
 
     return tweetMessage;
   }
@@ -84,21 +87,6 @@ public class TweetSource {
     }
 
     return receive;
-  }
-
-  private MessageSource<Tweet> twitterSearchMessageSource(
-          String query,
-          int pageSize
-  ) {
-    SearchReceivingMessageSource messageSource = searchTwitterMessageSource;
-
-    messageSource.setQuery(query);
-    messageSource.setPageSize(pageSize);
-
-    return () -> getTweetMessage(
-            "search:" + query,
-            searchTwitterMessageSource
-    );
   }
 
 }
