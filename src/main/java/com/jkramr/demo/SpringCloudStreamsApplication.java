@@ -17,7 +17,6 @@ import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.twitter.inbound.SearchReceivingMessageSource;
-import org.springframework.integration.twitter.inbound.TimelineReceivingMessageSource;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
