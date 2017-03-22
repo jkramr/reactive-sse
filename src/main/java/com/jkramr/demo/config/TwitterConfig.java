@@ -11,7 +11,7 @@ import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
 @Data
 @SpringBootConfiguration
-@PropertySource("classpath:twitter_oauth1.properties")
+@PropertySource("classpath:twitter_oauth.properties")
 @ConfigurationProperties("twitter.oauth")
 public class TwitterConfig {
 
