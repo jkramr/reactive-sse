@@ -12,7 +12,7 @@ import java.util.Objects;
 @Component
 public class ReactiveTweetsService {
 
-  private GithubService  githubService;
+  private GithubService githubService;
   private TwitterService twitterService;
 
 

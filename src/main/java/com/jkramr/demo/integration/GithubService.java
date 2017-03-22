@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Component
@@ -26,6 +27,7 @@ public class GithubService {
   private String query;
   private String accept;
   private String userAgent;
+  private int    repoCount;
 
   public Flux<Repo> getRepos() {
 
@@ -59,6 +61,9 @@ public class GithubService {
       return Collections.emptyList();
     }
 
-    return response.getItems();
+    return response.getItems()
+                   .stream()
+                   .limit(repoCount)
+                   .collect(Collectors.toList());
   }
 }
