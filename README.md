@@ -18,7 +18,7 @@ Powered by Spring Boot, one-button bootstrap, Reactive WebFlux Java
 -Dtwitter.oauth.consumerSecret=<key> 
 -Dtwitter.oauth.accessToken=<token> 
 -Dtwitter.oauth.accessTokenSecret=<token>
--Dgithub.api.query=<custom_query>`
+-Dgithub.api.search.query=<custom_query>`
 
 ## Required properties:
 
