@@ -1,6 +1,6 @@
 package com.jkramr.demo;
 
-import com.jkramr.demo.service.ReactiveTweets;
+import com.jkramr.demo.service.ReactiveTweetsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +29,9 @@ public class SpringCloudStreamsApplication {
 
   @Bean
   CommandLineRunner commandLineRunner(
-          ReactiveTweets reactiveTweets
+          ReactiveTweetsService reactiveTweetsService
   ) {
-    return args -> reactiveTweets.start();
+    return args -> reactiveTweetsService.start();
   }
 
 }

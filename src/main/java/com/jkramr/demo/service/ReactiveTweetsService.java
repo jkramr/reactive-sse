@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-public class ReactiveTweets {
+public class ReactiveTweetsService {
 
   private GithubService  githubService;
   private TwitterService twitterService;
 
 
   @Autowired
-  public ReactiveTweets(
+  public ReactiveTweetsService(
           GithubService githubService,
           TwitterService twitterService
   ) {

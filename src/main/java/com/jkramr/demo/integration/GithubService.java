@@ -23,7 +23,8 @@ public class GithubService {
 
   private String host;
   private String uri;
-  private String action;
+  private String query;
+  private String accept;
   private String userAgent;
 
   public Flux<Repo> getRepos() {
@@ -39,8 +40,8 @@ public class GithubService {
   private WebClient.HeaderSpec createRequest() {
     return WebClient.create(host)
                     .get()
-                    .uri(uri)
-                    .header("Action", action)
+                    .uri(uri + query)
+                    .header("Accept", accept)
                     .header("User-Agent", userAgent)
                     .accept(MediaType.APPLICATION_JSON);
   }
