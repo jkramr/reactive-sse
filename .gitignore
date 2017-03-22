@@ -24,5 +24,4 @@ dist/
 nbdist/
 .nb-gradle/
 *.log
-/src/main/resources/twitter_oauth.properties
-/src/main/resources/github.properties
+*.bak
