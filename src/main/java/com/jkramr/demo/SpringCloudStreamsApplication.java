@@ -31,7 +31,7 @@ public class SpringCloudStreamsApplication {
   CommandLineRunner commandLineRunner(
           ReactiveTweets reactiveTweets
   ) {
-    return args -> reactiveTweets.go();
+    return args -> reactiveTweets.start();
   }
 
 }
