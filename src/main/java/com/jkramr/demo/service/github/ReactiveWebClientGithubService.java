@@ -43,7 +43,7 @@ public class ReactiveWebClientGithubService
             .then(clientResponse -> clientResponse.bodyToMono(String.class))
             .then(this::trySearchForRepos)
             .then(this::limitItems)
-            .doOnError(throwable -> logger.error(throwable.getMessage()));
+            .doOnError(logger::error);
   }
 
   private Mono<GitHubRepoSearchResponse> trySearchForRepos(String json) {
