@@ -6,7 +6,7 @@ Powered by Spring Boot, one-button bootstrap, Reactive WebFlux Java
 
 ### 1) Clone this repository
 
-### 2a) Go to /src/main/resources, fill Twitter properties then run:
+### 2a) Go to /src/main/resources, fill `twitter_oauth.properties` then run:
 
 - `./gradlew bootRun`
 
