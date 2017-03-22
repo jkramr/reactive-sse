@@ -16,14 +16,18 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.social.twitter.api.Tweet;
 
 @EnableBinding(Source.class)
-public class TweetSource {
+public class ScalaNewsSource {
+
+  private static final String HASH_TAG        = "#scala";
+  private static final int    TWEET_PAGE_SIZE = 20;
 
   private final Logger                       logger;
   private final SearchReceivingMessageSource searchTwitterMessageSource;
   private final Formatter<Tweet>             tweetFormatter;
 
+
   @Autowired
-  public TweetSource(
+  public ScalaNewsSource(
           Logger logger,
           Formatter<Tweet> tweetFormatter,
           SearchReceivingMessageSource searchTwitterMessageSource
@@ -40,8 +44,8 @@ public class TweetSource {
   public MessageSource<Tweet> inboundSearchMessageSource() {
     SearchReceivingMessageSource messageSource = searchTwitterMessageSource;
 
-    messageSource.setQuery("#scala");
-    messageSource.setPageSize(20);
+    messageSource.setQuery(HASH_TAG);
+    messageSource.setPageSize(TWEET_PAGE_SIZE);
 
     return () -> getTweetMessage(
             "scala news: ",
@@ -63,7 +67,8 @@ public class TweetSource {
             .withPayload((Tweet) receive.getPayload())
             .setHeader(
                     MessageHeaders.CONTENT_TYPE,
-                    "application/x-java-object;type=" + Tweet.class.getTypeName()
+                    "application/x-java-object;type=" +
+                    Tweet.class.getTypeName()
             )
             .build();
 
@@ -88,5 +93,4 @@ public class TweetSource {
 
     return receive;
   }
-
 }

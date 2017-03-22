@@ -5,6 +5,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/release" }
         maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
@@ -25,6 +26,7 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/release" }
     maven { url "https://repo.spring.io/milestone" }
 }
 
@@ -55,8 +57,14 @@ dependencies {
      * ----- Twitter -----
      */
     compile('org.springframework.boot:spring-boot-starter-integration')
-    compile('org.springframework.boot:spring-boot-starter-social-twitter')
-    compile('org.springframework.integration:spring-integration-twitter')
+//    compile('org.springframework.boot:spring-boot-starter-social-twitter')
+    compile('org.springframework.social:spring-social-twitter:1.1.2.RELEASE')
+    compile('org.springframework.social:spring-social-config:1.1.2.RELEASE')
+    compile('org.springframework.social:spring-social-core:1.1.2.RELEASE')
+    compile('org.springframework.social:spring-social-web:1.1.2.RELEASE')
+
+    compile('org.springframework.integration:spring-integration-twitter:4.3.8.RELEASE')
+    compile('org.springframework.integration:spring-integration-core:4.3.8.RELEASE')
 
     /**
      * ----- Lombok -----
