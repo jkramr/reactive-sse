@@ -1,12 +1,11 @@
 package com.jkramr.demo.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jkramr.demo.config.GithubConfig;
-import com.jkramr.demo.model.GitHubReposResponse;
+import com.jkramr.demo.model.GitHubRepoSearchResponse;
 import com.jkramr.demo.model.Repo;
-import lombok.Data;
+import com.jkramr.demo.model.RepoInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.social.twitter.api.Tweet;
@@ -71,11 +70,11 @@ public class ReactiveTweets {
   private List<Repo> getRepos(String json) {
     ObjectMapper objectMapper = new ObjectMapper();
 
-    GitHubReposResponse response;
+    GitHubRepoSearchResponse response;
     try {
       response = objectMapper.readValue(
               json,
-              GitHubReposResponse.class
+              GitHubRepoSearchResponse.class
       );
     } catch (IOException e) {
       return Collections.emptyList();
@@ -84,18 +83,4 @@ public class ReactiveTweets {
     return response.getItems();
   }
 
-  @Data
-  private class RepoInfo {
-    private final String      repo;
-    private final List<Tweet> tweets;
-
-    @Override
-    public String toString() {
-      try {
-        return new ObjectMapper().writeValueAsString(this);
-      } catch (JsonProcessingException e) {
-        return super.toString();
-      }
-    }
-  }
 }
