@@ -3,7 +3,7 @@ package com.jkramr.demo.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jkramr.demo.config.Github;
+import com.jkramr.demo.config.GithubConfig;
 import com.jkramr.demo.model.GitHubReposResponse;
 import com.jkramr.demo.model.Repo;
 import lombok.Data;
@@ -23,22 +23,22 @@ import java.util.Objects;
 @Component
 public class ReactiveTweets {
 
-  private final Twitter twitter;
-  private       Github  github;
+  private final Twitter      twitter;
+  private       GithubConfig githubConfig;
 
   @Autowired
   public ReactiveTweets(
           Twitter twitter,
-          Github github
+          GithubConfig githubConfig
   ) {
     this.twitter = twitter;
-    this.github = github;
+    this.githubConfig = githubConfig;
   }
 
   public void go() {
-    WebClient.HeaderSpec request = WebClient.create(github.getHost())
+    WebClient.HeaderSpec request = WebClient.create(githubConfig.getHost())
                                             .get()
-                                            .uri(github.getUri())
+                                            .uri(githubConfig.getUri())
                                             .header(
                                                     "Accept",
                                                     "application/vnd.github.v3+json"

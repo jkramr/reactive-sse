@@ -1,28 +1,14 @@
 package com.jkramr.demo.config;
 
+import lombok.Data;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Data
 @SpringBootConfiguration
 @ConfigurationProperties("github.api")
-public class Github {
+public class GithubConfig {
 
   private String host;
   private String uri;
-
-  public String getHost() {
-    return host;
-  }
-
-  public void setHost(String host) {
-    this.host = host;
-  }
-
-  public String getUri() {
-    return uri;
-  }
-
-  public void setUri(String uri) {
-    this.uri = uri;
-  }
 }
