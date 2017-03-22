@@ -1,6 +1,5 @@
 package com.jkramr.demo.service.twitter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
 import reactor.core.publisher.Flux;

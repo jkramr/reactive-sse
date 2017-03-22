@@ -9,31 +9,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Component
-public class ReactiveTweetsService {
+public class GithubToTwitterStreamService {
 
-  private GithubService  githubService;
-  private TwitterService twitterService;
+  private GithubService      githubService;
+  private TwitterService     twitterService;
+  private Consumer<RepoInfo> outputConsumer;
 
 
   @Autowired
-  public ReactiveTweetsService(
+  public GithubToTwitterStreamService(
           GithubService githubService,
-          TwitterService twitterService
+          TwitterService twitterService,
+          Consumer<RepoInfo> outputConsumer
   ) {
     this.githubService = githubService;
     this.twitterService = twitterService;
   }
 
   public void start() {
+    outputConsumer = System.out::println;
     githubService.getRepos()
                  .filter(Objects::nonNull)
                  .map(GithubRepo::getFullName)
                  .flatMap(twitterService::searchTweets)
                  .map(this::formatToJsonResponse)
                  .toStream()
-                 .forEach(System.out::println);
+                 .forEach(outputConsumer);
   }
 
   private RepoInfo formatToJsonResponse(TwitterSearchResponse twitterSearchResponse) {

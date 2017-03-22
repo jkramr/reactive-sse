@@ -1,5 +1,6 @@
 package com.jkramr.demo.config;
 
+import com.jkramr.demo.service.RepoInfo;
 import com.jkramr.demo.service.github.GithubService;
 import com.jkramr.demo.service.github.ReactiveWebClientGithubService;
 import com.jkramr.demo.service.twitter.SpringSocialTwitterService;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SpringBootConfiguration
@@ -35,5 +37,10 @@ public class ApplicationConfig {
   @Scope("prototype")
   Logger logger(InjectionPoint ip) {
     return Logger.getLogger(ip.getDeclaredType().getName());
+  }
+
+  @Bean
+  Consumer<RepoInfo> outputConsumer() {
+    return System.out::println;
   }
 }
