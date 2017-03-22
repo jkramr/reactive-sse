@@ -6,7 +6,6 @@ import com.jkramr.demo.model.Repo;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,10 +21,10 @@ import java.util.List;
 @ConfigurationProperties("github.api")
 public class GithubService {
 
-  private String   host;
-  private String   uri;
-  private String   action;
-  private String   userAgent;
+  private String host;
+  private String uri;
+  private String action;
+  private String userAgent;
 
   public Flux<Repo> getRepos() {
 
