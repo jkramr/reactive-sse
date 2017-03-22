@@ -1,7 +1,7 @@
 package com.jkramr.demo.service.github;
 
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface GithubService {
-  Flux<GithubRepo> getRepos();
+  Mono<GitHubRepoSearchResponse> getRepos();
 }

@@ -1,6 +1,5 @@
 package com.jkramr.demo.config;
 
-import com.jkramr.demo.service.RepoInfo;
 import com.jkramr.demo.service.github.GithubService;
 import com.jkramr.demo.service.github.ReactiveWebClientGithubService;
 import com.jkramr.demo.service.twitter.SpringSocialTwitterService;
@@ -21,16 +20,18 @@ public class ApplicationConfig {
 
   @Bean
   GithubService githubService(
-          Function<String, WebClient.HeaderSpec> gitHubClient
+          Function<String, WebClient.HeaderSpec> gitHubClient,
+          Logger logger
   ) {
-    return new ReactiveWebClientGithubService(gitHubClient);
+    return new ReactiveWebClientGithubService(gitHubClient, logger);
   }
 
   @Bean
   TwitterService twitterService(
+          Logger logger,
           Twitter twitter
   ) {
-    return new SpringSocialTwitterService(twitter);
+    return new SpringSocialTwitterService(logger, twitter);
   }
 
   @Bean
@@ -40,7 +41,7 @@ public class ApplicationConfig {
   }
 
   @Bean
-  Consumer<RepoInfo> outputConsumer() {
+  Consumer<String> outputConsumer() {
     return System.out::println;
   }
 }

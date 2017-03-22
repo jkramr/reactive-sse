@@ -1,30 +1,39 @@
 package com.jkramr.demo.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jkramr.demo.service.github.GitHubRepoSearchResponse;
 import com.jkramr.demo.service.github.GithubRepo;
 import com.jkramr.demo.service.github.GithubService;
 import com.jkramr.demo.service.twitter.TwitterSearchResponse;
 import com.jkramr.demo.service.twitter.TwitterService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Component
 public class GithubToTwitterStreamService {
 
-  private GithubService      githubService;
-  private TwitterService     twitterService;
-  private Consumer<RepoInfo> outputConsumer;
+  private Logger logger;
+
+  private Consumer<String> outputConsumer;
+
+  private GithubService  githubService;
+  private TwitterService twitterService;
 
 
   @Autowired
   public GithubToTwitterStreamService(
+          Logger logger,
           GithubService githubService,
           TwitterService twitterService,
-          Consumer<RepoInfo> outputConsumer
+          Consumer<String> outputConsumer
   ) {
+    this.logger = logger;
     this.githubService = githubService;
     this.twitterService = twitterService;
     this.outputConsumer = outputConsumer;
@@ -33,19 +42,27 @@ public class GithubToTwitterStreamService {
   public void start() {
     outputConsumer = System.out::println;
     githubService.getRepos()
-                 .filter(Objects::nonNull)
+                 .map(GitHubRepoSearchResponse::getItems)
+                 .flatMap(Flux::fromIterable)
                  .map(GithubRepo::getFullName)
                  .flatMap(twitterService::searchTweets)
-                 .map(this::formatToJsonResponse)
+                 .flatMap(this::formatToJsonResponse)
+                 .doOnError(logger::error)
                  .toStream()
                  .forEach(outputConsumer);
   }
 
-  private RepoInfo formatToJsonResponse(TwitterSearchResponse twitterSearchResponse) {
-    return new RepoInfo(
+  private Flux<String> formatToJsonResponse(TwitterSearchResponse twitterSearchResponse) {
+    RepoInfo repoInfo = new RepoInfo(
             twitterSearchResponse.getSearchQuery(),
             twitterSearchResponse.getTweets()
     );
+
+    try {
+      return Flux.just(new ObjectMapper().writeValueAsString(repoInfo));
+    } catch (JsonProcessingException e) {
+      return Flux.error(e);
+    }
   }
 
 }
