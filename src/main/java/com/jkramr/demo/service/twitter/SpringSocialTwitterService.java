@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.social.ApiException;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -23,13 +23,13 @@ public class SpringSocialTwitterService
   }
 
   @Override
-  public Flux<TwitterSearchResponse> searchTweets(String searchQuery) {
+  public Mono<TwitterSearchResponse> searchTweets(String searchQuery) {
     return getTweets(searchQuery)
             .map(tweets -> new TwitterSearchResponse(searchQuery, tweets))
             .doOnError(logger::error);
   }
 
-  private Flux<List<Tweet>> getTweets(String searchQuery) {
+  private Mono<List<Tweet>> getTweets(String searchQuery) {
     List<Tweet> tweets;
 
     try {
@@ -38,10 +38,10 @@ public class SpringSocialTwitterService
                       .getTweets();
 
     } catch (ApiException e) {
-      return Flux.error(e);
+      return Mono.error(e);
     }
 
-    return Flux.just(tweets);
+    return Mono.just(tweets);
   }
 
 }
