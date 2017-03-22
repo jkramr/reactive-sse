@@ -5,12 +5,10 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/release" }
         maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE"
     }
 }
 
@@ -26,22 +24,11 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     maven { url "https://repo.spring.io/snapshot" }
-    maven { url "https://repo.spring.io/release" }
     maven { url "https://repo.spring.io/milestone" }
 }
 
 
 dependencies {
-
-    /**
-     * ----- RabbitMQ -----
-     */
-    compile('org.springframework.cloud:spring-cloud-starter-stream-rabbit')
-
-    // stable non-conflicting dependencies override
-    compile('org.springframework.amqp:spring-amqp:1.7.1.RELEASE')
-    compile('org.springframework.amqp:spring-rabbit:1.7.1.RELEASE')
-    compile('org.springframework.integration:spring-integration-amqp:4.3.8.RELEASE')
 
     /**
      * ----- Spring configuration parsing support -----
@@ -56,8 +43,6 @@ dependencies {
     /**
      * ----- Twitter -----
      */
-    compile('org.springframework.boot:spring-boot-starter-integration')
-//    compile('org.springframework.boot:spring-boot-starter-social-twitter')
     compile('org.springframework.social:spring-social-twitter:1.1.2.RELEASE')
     compile('org.springframework.social:spring-social-config:1.1.2.RELEASE')
     compile('org.springframework.social:spring-social-core:1.1.2.RELEASE')
@@ -75,10 +60,4 @@ dependencies {
      * ----- Test -----
      */
     testCompile('org.springframework.boot:spring-boot-starter-test')
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.BUILD-SNAPSHOT"
-    }
 }

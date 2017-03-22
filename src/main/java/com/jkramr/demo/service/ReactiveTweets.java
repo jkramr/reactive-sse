@@ -3,7 +3,9 @@ package com.jkramr.demo.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jkramr.demo.util.Formatter;
+import com.jkramr.demo.config.Github;
+import com.jkramr.demo.model.GitHubReposResponse;
+import com.jkramr.demo.model.Repo;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,22 +23,22 @@ import java.util.Objects;
 @Component
 public class ReactiveTweets {
 
-  private static final String PATH = "https://api.github.com/search";
-  private static final String URI  = "/repositories?q=reactive";
-
-  private final Twitter          twitter;
+  private final Twitter twitter;
+  private       Github  github;
 
   @Autowired
   public ReactiveTweets(
-          Twitter twitter
+          Twitter twitter,
+          Github github
   ) {
     this.twitter = twitter;
+    this.github = github;
   }
 
   public void go() {
-    WebClient.HeaderSpec request = WebClient.create(PATH)
+    WebClient.HeaderSpec request = WebClient.create(github.getHost())
                                             .get()
-                                            .uri(URI)
+                                            .uri(github.getUri())
                                             .header(
                                                     "Accept",
                                                     "application/vnd.github.v3+json"

@@ -1,15 +1,15 @@
-package com.jkramr.demo.service;
+package com.jkramr.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jkramr.demo.model.Repo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Repo {
-
-  @JsonProperty("full_name")
-  String fullName;
+public class GitHubReposResponse {
+  private List<Repo> items;
 }

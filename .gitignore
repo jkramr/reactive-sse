@@ -23,4 +23,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/src/main/resources/oauth.properties
+/src/main/resources/twitter_oauth.properties
