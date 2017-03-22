@@ -27,6 +27,7 @@ public class GithubToTwitterStreamService {
   ) {
     this.githubService = githubService;
     this.twitterService = twitterService;
+    this.outputConsumer = outputConsumer;
   }
 
   public void start() {
