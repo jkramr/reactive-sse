@@ -28,7 +28,7 @@ repositories {
 }
 
 bootRun {
-    systemProperties System.properties
+    systemProperties System.properties as Map<String, ?>
 }
 
 dependencies {
