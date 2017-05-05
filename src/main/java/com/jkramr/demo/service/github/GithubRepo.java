@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Stack;
 
 @Data
 @NoArgsConstructor
@@ -13,9 +12,4 @@ import java.util.Stack;
 public class GithubRepo {
   @JsonProperty("full_name")
   String fullName;
-
-  public static void main(String[] args) {
-    Stack stack = new Stack();
-    stack.peek();
-  }
 }
