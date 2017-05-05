@@ -21,15 +21,18 @@ public class ReactiveGithub {
   private String headerUserAgent;
 
   @Bean
-  Function<String, WebClient.HeaderSpec> githubWebClient(
+  Function<String, WebClient.RequestHeadersSpec> githubWebClient(
 
   ) {
     return uri -> WebClient.create(host)
-                           .get()
-                           .uri(uri)
-                           .header("Accept", headerAccept)
-                           .header("User-Agent", headerUserAgent)
-                           .accept(MediaType.APPLICATION_JSON);
+                         .get()
+                         .uri(uri)
+                         .header("Accept", headerAccept)
+                         .header(
+                            "User-Agent",
+                            headerUserAgent
+                    )
+                         .accept(MediaType.APPLICATION_JSON);
   }
 
 }

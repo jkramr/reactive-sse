@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class ReactiveWebClientGithubService
         implements GithubService {
 
-  private final Function<String, WebClient.HeaderSpec> gitHubClient;
+  private final Function<String, WebClient.RequestHeadersSpec> gitHubClient;
   private       Logger                                 logger;
 
   private String uri;
@@ -27,7 +27,7 @@ public class ReactiveWebClientGithubService
   private int    limit;
 
   public ReactiveWebClientGithubService(
-          Function<String, WebClient.HeaderSpec> gitHubClient,
+          Function<String, WebClient.RequestHeadersSpec> gitHubClient,
           Logger logger
   ) {
     this.gitHubClient = gitHubClient;

@@ -20,7 +20,7 @@ public class ApplicationConfig {
 
   @Bean
   GithubService githubService(
-          Function<String, WebClient.HeaderSpec> gitHubClient,
+          Function<String, WebClient.RequestHeadersSpec> gitHubClient,
           Logger logger
   ) {
     return new ReactiveWebClientGithubService(gitHubClient, logger);
