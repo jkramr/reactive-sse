@@ -9,9 +9,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @PropertySource("classpath:github.properties")
@@ -69,6 +72,9 @@ public class ReactiveWebClientGithubService
                                           .collect(Collectors.toList());
 
     response.setItems(limitItems);
+
+    Stream.of(1, 2, 3)
+          .sorted(Comparator.reverseOrder());
 
     return Mono.just(response);
   }
